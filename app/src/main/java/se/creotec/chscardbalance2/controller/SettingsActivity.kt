@@ -15,6 +15,8 @@ import android.widget.NumberPicker
 import android.widget.TextView
 import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
+import kotlinx.android.synthetic.main.activity_settings.*
+import kotlinx.android.synthetic.main.dialog_number_picker.*
 import se.creotec.chscardbalance2.Constants
 import se.creotec.chscardbalance2.GlobalState
 import se.creotec.chscardbalance2.R
@@ -26,25 +28,13 @@ import se.creotec.chscardbalance2.util.Util
 
 class SettingsActivity : AppCompatActivity() {
 
-    var cardNumberContainer: View? = null
-    var cardNumberText: TextView? = null
-
-    var menuLangContainer: View? = null
-    var menuLangText: TextView? = null
-
-    var toggleLowBalanceContainer: View? = null
-    var toggleLowBalanceNotifications: SwitchCompat? = null
-    var lowBalanceLimitContainer: View? = null
-    var lowBalanceLimitText: TextView? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
         val global = application as GlobalState
         var formattedNumber = Util.formatCardNumber(global.model.cardData.cardNumber)
 
-        cardNumberContainer = findViewById(R.id.settings_card_number)
-        cardNumberContainer?.setOnClickListener {
+        settings_card_number.setOnClickListener {
             val dialog = MaterialDialog.Builder(this)
                     .title(R.string.prefs_card_number)
                     .inputType(InputType.TYPE_CLASS_NUMBER)
@@ -72,10 +62,7 @@ class SettingsActivity : AppCompatActivity() {
             dialog.show()
         }
 
-        cardNumberText = findViewById(R.id.settings_card_number_text) as TextView
-
-        menuLangContainer = findViewById(R.id.settings_menu_lang)
-        menuLangContainer?.setOnClickListener {
+        settings_menu_lang?.setOnClickListener {
             MaterialDialog.Builder(this)
                     .title(R.string.prefs_menu_lang)
                     .items(R.array.prefs_menu_lang_list)
@@ -90,25 +77,17 @@ class SettingsActivity : AppCompatActivity() {
                     .show()
 
         }
-        menuLangText = findViewById(R.id.settings_menu_lang_text) as TextView
-
-
-        lowBalanceLimitContainer = findViewById(R.id.settings_low_balance_limit)
-        toggleLowBalanceContainer = findViewById(R.id.settings_enable_low_balance_parent)
-        toggleLowBalanceNotifications = findViewById(R.id.settings_enable_low_balance_switch) as SwitchCompat
-        lowBalanceLimitText = findViewById(R.id.settings_low_balance_limit_text) as TextView
-
 
         val lowBalanceLimitString = getString(R.string.currency_suffix, global.model.notifications.lowBalanceNotificationLimit.toString())
-        lowBalanceLimitText?.text = lowBalanceLimitString
-        toggleLowBalanceNotifications?.let {
+        settings_low_balance_limit_text.text = lowBalanceLimitString
+        settings_enable_low_balance_switch.let {
             it.isChecked = global.model.notifications.isLowBalanceNotificationsEnabled
             notificationsEnabledToggled(it.isChecked)
             it.setOnCheckedChangeListener { _, checked -> notificationsEnabledToggled(checked, savePreference = true) }
         }
-        toggleLowBalanceContainer?.setOnClickListener { toggleLowBalanceNotifications?.toggle() }
+        settings_enable_low_balance_parent.setOnClickListener { settings_enable_low_balance_switch.toggle() }
 
-        lowBalanceLimitContainer?.setOnClickListener {
+        settings_low_balance_limit.setOnClickListener {
             val dialog = MaterialDialog.Builder(this)
                     .title(R.string.prefs_notifications_low_balance_label)
                     .customView(R.layout.dialog_number_picker, false)
@@ -116,16 +95,15 @@ class SettingsActivity : AppCompatActivity() {
                     .positiveText(R.string.action_save)
                     .onPositive { dialog, action->
                         if (action == DialogAction.POSITIVE) {
-                            val numberPicker = dialog.customView?.findViewById(R.id.dialog_notify_number_picker) as NumberPicker
-                            setLowBalanceLimit(numberPicker.value, savePreference = true)
+                            setLowBalanceLimit(dialog_notify_number_picker.value, savePreference = true)
                         }
                     }
                     .build()
-            val numberPicker = dialog.customView?.findViewById(R.id.dialog_notify_number_picker) as NumberPicker
-            numberPicker.minValue = Constants.PREFS_NOTIFICATION_LOW_BALANCE_LIMIT_MIN
-            numberPicker.maxValue = Constants.PREFS_NOTIFICATION_LOW_BALANCE_LIMIT_MAX
-            numberPicker.wrapSelectorWheel = false
-            numberPicker.value = global.model.notifications.lowBalanceNotificationLimit
+
+            dialog_notify_number_picker.minValue = Constants.PREFS_NOTIFICATION_LOW_BALANCE_LIMIT_MIN
+            dialog_notify_number_picker.maxValue = Constants.PREFS_NOTIFICATION_LOW_BALANCE_LIMIT_MAX
+            dialog_notify_number_picker.wrapSelectorWheel = false
+            dialog_notify_number_picker.value = global.model.notifications.lowBalanceNotificationLimit
             dialog.show()
         }
 
@@ -144,7 +122,7 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val lowBalanceLimitString = getString(R.string.currency_suffix, limitToSet.toString())
-        lowBalanceLimitText?.text = lowBalanceLimitString
+        settings_low_balance_limit_text.text = lowBalanceLimitString
         if (savePreference) {
             val global = application as GlobalState
             global.model.notifications.lowBalanceNotificationLimit = limitToSet
@@ -153,7 +131,7 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun notificationsEnabledToggled(enabled: Boolean, savePreference: Boolean = false) {
-        lowBalanceLimitContainer?.let {
+        settings_low_balance_limit.let {
             it.isClickable = enabled
             it.isFocusable = enabled
             if (enabled) {
@@ -178,7 +156,7 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
         val number = Util.formatCardNumber(cardNumber)
-        cardNumberText?.text = number
+        settings_card_number_text.text = number
         if (savePreference) {
             val global = application as GlobalState
             global.model.cardData.cardNumber = cardNumber
@@ -194,8 +172,8 @@ class SettingsActivity : AppCompatActivity() {
             return
         }
         when (lang) {
-            Constants.ENDPOINT_MENU_LANG_EN -> menuLangText?.text = getString(R.string.prefs_menu_lang_en)
-            Constants.ENDPOINT_MENU_LANG_SV -> menuLangText?.text = getString(R.string.prefs_menu_lang_sv)
+            Constants.ENDPOINT_MENU_LANG_EN -> settings_menu_lang_text.text = getString(R.string.prefs_menu_lang_en)
+            Constants.ENDPOINT_MENU_LANG_SV -> settings_menu_lang_text.text = getString(R.string.prefs_menu_lang_sv)
             else -> return
         }
         if (savePreference) {
