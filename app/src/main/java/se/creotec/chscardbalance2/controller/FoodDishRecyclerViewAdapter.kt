@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import kotlinx.android.synthetic.main.fragment_dish.view.*
 
 import se.creotec.chscardbalance2.R
 import se.creotec.chscardbalance2.controller.FoodDishFragment.OnListFragmentInteractionListener
@@ -42,8 +43,8 @@ class FoodDishRecyclerViewAdapter(private val dishes: List<Dish>, private val li
     }
 
     inner class ViewHolder(val dishContainer: View) : RecyclerView.ViewHolder(dishContainer) {
-        val dishTitle: TextView = dishContainer.findViewById(R.id.dish_title) as TextView
-        val dishDesc: TextView = dishContainer.findViewById(R.id.dish_desc) as TextView
+        val dishTitle: TextView = dishContainer.dish_title
+        val dishDesc: TextView = dishContainer.dish_desc
         var dish: Dish? = null
 
         override fun toString(): String {

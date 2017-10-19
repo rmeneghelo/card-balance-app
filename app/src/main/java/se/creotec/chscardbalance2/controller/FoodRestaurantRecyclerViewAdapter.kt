@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 
 import com.nostra13.universalimageloader.core.ImageLoader
+import kotlinx.android.synthetic.main.fragment_foodmenu.view.*
 
 import se.creotec.chscardbalance2.R
 import se.creotec.chscardbalance2.controller.FoodRestaurantFragment.OnListFragmentInteractionListener
@@ -72,12 +73,12 @@ class FoodRestaurantRecyclerViewAdapter(restaurants: List<Restaurant>, private v
     }
 
     inner class ViewHolder(val holderView: View) : RecyclerView.ViewHolder(holderView) {
-        val restaurantHeader: ImageView = holderView.findViewById(R.id.restaurant_image) as ImageView
-        val restaurantHeaderGradient: ImageView = holderView.findViewById(R.id.restaurant_image_gradient) as ImageView
-        val restaurantHeaderTint: ImageView = holderView.findViewById(R.id.restaurant_image_tint) as ImageView
-        val restaurantName: TextView = holderView.findViewById(R.id.restaurant_name) as TextView
-        val restaurantDishCount: TextView = holderView.findViewById(R.id.restaurant_dishes_count) as TextView
-        val restaurantClosed: TextView = holderView.findViewById(R.id.restaurant_closed_today) as TextView
+        val restaurantHeader: ImageView = holderView.restaurant_image
+        val restaurantHeaderGradient: ImageView = holderView.restaurant_image_gradient
+        val restaurantHeaderTint: ImageView = holderView.restaurant_image_tint
+        val restaurantName: TextView = holderView.restaurant_name
+        val restaurantDishCount: TextView = holderView.restaurant_dishes_count
+        val restaurantClosed: TextView = holderView.restaurant_closed_today
 
         var restaurant: Restaurant? = null
 
