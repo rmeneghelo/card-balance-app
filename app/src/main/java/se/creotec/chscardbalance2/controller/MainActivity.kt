@@ -14,16 +14,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.customtabs.CustomTabsIntent
 import android.support.design.widget.*
-import android.support.v4.widget.DrawerLayout
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.gson.Gson
@@ -43,7 +39,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentInteractionListener,
         OnCardDataChangedListener, OnMenuDataChangedListener, IModel.OnServiceFailedListener, NavigationView.OnNavigationItemSelectedListener {
-    
+
     private var drawerToggle: ActionBarDrawerToggle? = null
 
     private var showTextMenuButton: Boolean = false
