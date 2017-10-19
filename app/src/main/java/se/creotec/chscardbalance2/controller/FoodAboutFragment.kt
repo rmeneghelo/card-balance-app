@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.fragment_restaurant_about.*
 import org.w3c.dom.Text
 import se.creotec.chscardbalance2.R
 import se.creotec.chscardbalance2.model.OpenHour
@@ -25,13 +26,6 @@ import java.util.*
 class FoodAboutFragment : Fragment() {
 
     private var restaurant: Restaurant = Restaurant("")
-
-    private var websiteButton: Button? = null
-    private var rating: RatingBar? = null
-    private var openNow: TextView? = null
-    private var openHours: TextView? = null
-    private var location: TextView? = null
-    private var priceEstimate: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,16 +38,10 @@ class FoodAboutFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_restaurant_about, container, false)
-        rating = view.findViewById(R.id.restaurant_rating_bar) as RatingBar
-        websiteButton = view.findViewById(R.id.restaurant_visit_website) as Button
-        openNow = view.findViewById(R.id.restaurant_about_open_now) as TextView
-        openHours = view.findViewById(R.id.restaurant_about_open_hours) as TextView
-        priceEstimate = view.findViewById(R.id.restaurant_about_avg_price) as TextView
-        location = view.findViewById(R.id.restaurant_about_campus) as TextView
 
-        rating?.rating = restaurant.rating
-        setOpenHours(openNow, openHours)
-        websiteButton?.setOnClickListener {
+        restaurant_rating_bar.rating = restaurant.rating
+        setOpenHours(restaurant_about_open_now, restaurant_about_open_hours)
+        restaurant_visit_website.setOnClickListener {
             val webIntent = CustomTabsIntent.Builder()
                     .setToolbarColor(activity.getColor(R.color.color_primary))
                     .build()
@@ -61,19 +49,19 @@ class FoodAboutFragment : Fragment() {
         }
 
         if (restaurant.averagePrice != 0) {
-            priceEstimate?.text = getString(R.string.restaurant_about_avg_price, restaurant.averagePrice)
+            restaurant_about_avg_price.text = getString(R.string.restaurant_about_avg_price, restaurant.averagePrice)
         } else {
-            priceEstimate?.text = getString(R.string.restaurant_about_avg_no_price)
+            restaurant_about_avg_price.text = getString(R.string.restaurant_about_avg_no_price)
         }
 
-        location?.text = getString(R.string.restaurant_about_campus, restaurant.campus)
+        restaurant_about_campus.text = getString(R.string.restaurant_about_campus, restaurant.campus)
 
         return view
     }
 
     override fun onResume() {
         super.onResume()
-        setOpenHours(openNow, openHours)
+        setOpenHours(restaurant_about_open_now, restaurant_about_open_hours)
     }
 
     private fun setOpenHours(openNow: TextView?, openHours: TextView?) {
