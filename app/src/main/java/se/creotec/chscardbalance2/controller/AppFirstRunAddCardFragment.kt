@@ -39,13 +39,12 @@ class AppFirstRunAddCardFragment : Fragment(), ISlidePolicy {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_app_first_run_add_card, container, false)
-        val clearButton = view.findViewById(R.id.clear_button) as Button
-        card_number_edit.addTextChangedListener(TextEmptyWatcher(clearButton))
+        card_number_edit.addTextChangedListener(TextEmptyWatcher(clear_button))
         card_number_edit.addTextChangedListener(CardNumberMask())
         // Make max length = total number of digits in card number + spaces between with good formatting
         val filters = Array<InputFilter>(1, { _ -> InputFilter.LengthFilter(Constants.CARD_NUMBER_LENGTH + 3) })
         card_number_edit.filters = filters
-        clearButton.setOnClickListener { card_number_edit.text?.clear() }
+        clear_button.setOnClickListener { card_number_edit.text?.clear() }
         card_number_edit.setOnEditorActionListener({view,actionID,_  ->
             if (actionID == EditorInfo.IME_ACTION_DONE) {
                 val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
