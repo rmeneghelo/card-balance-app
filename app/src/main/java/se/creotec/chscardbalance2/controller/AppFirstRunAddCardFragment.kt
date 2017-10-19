@@ -16,10 +16,10 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import com.github.paolorotolo.appintro.AppIntro
 import com.github.paolorotolo.appintro.ISlidePolicy
+import kotlinx.android.synthetic.main.fragment_app_first_run_add_card.*
 import se.creotec.chscardbalance2.Constants
 import se.creotec.chscardbalance2.GlobalState
 import se.creotec.chscardbalance2.R
@@ -29,7 +29,6 @@ import se.creotec.chscardbalance2.util.CardNumberMask
 
 class AppFirstRunAddCardFragment : Fragment(), ISlidePolicy {
 
-    private var cardNumberEdit: EditText? = null
     private var introParent: AppIntro? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,15 +39,14 @@ class AppFirstRunAddCardFragment : Fragment(), ISlidePolicy {
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_app_first_run_add_card, container, false)
-        cardNumberEdit = view.findViewById(R.id.card_number_edit) as EditText
         val clearButton = view.findViewById(R.id.clear_button) as Button
-        cardNumberEdit?.addTextChangedListener(TextEmptyWatcher(clearButton))
-        cardNumberEdit?.addTextChangedListener(CardNumberMask())
+        card_number_edit.addTextChangedListener(TextEmptyWatcher(clearButton))
+        card_number_edit.addTextChangedListener(CardNumberMask())
         // Make max length = total number of digits in card number + spaces between with good formatting
         val filters = Array<InputFilter>(1, { _ -> InputFilter.LengthFilter(Constants.CARD_NUMBER_LENGTH + 3) })
-        cardNumberEdit?.filters = filters
-        clearButton.setOnClickListener { cardNumberEdit?.text?.clear() }
-        cardNumberEdit?.setOnEditorActionListener({view,actionID,_  ->
+        card_number_edit.filters = filters
+        clearButton.setOnClickListener { card_number_edit.text?.clear() }
+        card_number_edit.setOnEditorActionListener({view,actionID,_  ->
             if (actionID == EditorInfo.IME_ACTION_DONE) {
                 val imm = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(view.applicationWindowToken, InputMethodManager.HIDE_NOT_ALWAYS)
@@ -62,7 +60,7 @@ class AppFirstRunAddCardFragment : Fragment(), ISlidePolicy {
 
     override fun isPolicyRespected(): Boolean {
         if (isCardNumberValid()) {
-            val cardNumber: String = cardNumberEdit?.text.toString().replace(" ", "")
+            val cardNumber: String = card_number_edit.text.toString().replace(" ", "")
             val cardData = CardData()
             cardData.cardNumber = cardNumber
             val global = activity.application as GlobalState
@@ -95,7 +93,7 @@ class AppFirstRunAddCardFragment : Fragment(), ISlidePolicy {
     }
 
     private fun isCardNumberValid(): Boolean {
-        cardNumberEdit?.let {
+        card_number_edit.let {
             val cardNumber: String = it.text.toString().replace(" ", "")
             if (cardNumber.length == Constants.CARD_NUMBER_LENGTH) {
                 return true
