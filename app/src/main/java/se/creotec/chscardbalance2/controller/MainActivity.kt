@@ -27,6 +27,8 @@ import android.widget.TextView
 import com.afollestad.materialdialogs.DialogAction
 import com.afollestad.materialdialogs.MaterialDialog
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.dialog_about.*
 import se.creotec.chscardbalance2.BuildConfig
 import se.creotec.chscardbalance2.Constants
 import se.creotec.chscardbalance2.GlobalState
@@ -41,18 +43,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentInteractionListener,
         OnCardDataChangedListener, OnMenuDataChangedListener, IModel.OnServiceFailedListener, NavigationView.OnNavigationItemSelectedListener {
-
-    private var parentView: View? = null
-    private var appBarLayout: AppBarLayout? = null
-    private var collapsingToolbarLayout: CollapsingToolbarLayout? = null
-    private var swipeRefresh: SwipeRefreshLayout? = null
-    private var quickChargeFAB: FloatingActionButton? = null
-
-    private var cardOwnerName: TextView? = null
-    private var cardNumber: TextView? = null
-
-    private var drawerLayout: DrawerLayout? = null
-    private var drawerView: NavigationView? = null
+    
     private var drawerToggle: ActionBarDrawerToggle? = null
 
     private var showTextMenuButton: Boolean = false
@@ -60,7 +51,6 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        parentView = findViewById(R.id.main_activity_parent)
         val global = application as GlobalState
         global.model.addCardDataListener(this)
         global.model.addMenuDataListener(this)
@@ -89,20 +79,20 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
     override fun cardDataChanged(newData: CardData) {
         Log.i(LOG_TAG, "Card data was updated")
         runOnUiThread {
-            swipeRefresh?.isRefreshing = false
+            swipe_refresh_container.isRefreshing = false
             setCardData(newData)
         }
     }
 
     override fun menuDataChanged(newData: MenuData) {
         Log.i(LOG_TAG, "Menu data was updated")
-        runOnUiThread { swipeRefresh?.isRefreshing = false }
+        runOnUiThread { swipe_refresh_container.isRefreshing = false }
     }
 
     override fun serviceFailed(service: AbstractBackendService<*>, error: String) {
         runOnUiThread {
-            swipeRefresh?.isRefreshing = false
-            parentView?.let {
+            swipe_refresh_container.isRefreshing = false
+            main_activity_parent.let {
                 if (service is BalanceService) {
                     Snackbar.make(it, R.string.error_card_failed, Snackbar.LENGTH_LONG)
                             .setAction(R.string.action_retry, { _ ->
@@ -123,7 +113,7 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        drawerLayout?.closeDrawers()
+        main_drawer_layout.closeDrawers()
         when (item.itemId) {
             R.id.drawer_menu_home -> {
                 item.isChecked = true
@@ -142,10 +132,9 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
                         .positiveText(R.string.action_close)
                         .neutralText(R.string.action_view_on_github)
                         .build()
-                val versionText = dialog.customView?.findViewById(R.id.dialog_about_version) as TextView
                 val gitHubButton = dialog.getActionButton(DialogAction.NEUTRAL)
 
-                versionText.text = getString(R.string.dialog_about_version_text, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
+                dialog_about_version.text = getString(R.string.dialog_about_version_text, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE)
                 gitHubButton.setOnClickListener { _ ->
                     val webIntent = CustomTabsIntent.Builder()
                             .setToolbarColor(getColor(R.color.color_primary))
@@ -196,20 +185,12 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
 
     // Sets up the appbar
     private fun setupAppBar() {
-        val toolbar = findViewById(R.id.toolbar_main) as Toolbar
-        setSupportActionBar(toolbar)
-        collapsingToolbarLayout = findViewById(R.id.toolbar_collapsing_layout) as CollapsingToolbarLayout
-        swipeRefresh = findViewById(R.id.swipe_refresh_container) as SwipeRefreshLayout
-        cardOwnerName = findViewById(R.id.toolbar_card_name) as TextView
-        cardNumber = findViewById(R.id.toolbar_card_number) as TextView
-        appBarLayout = findViewById(R.id.app_bar_layout) as AppBarLayout
-        drawerLayout = findViewById(R.id.main_drawer_layout) as DrawerLayout
-        drawerView = findViewById(R.id.main_drawer_view) as NavigationView
+        setSupportActionBar(toolbar_main)
 
-        drawerView?.setNavigationItemSelectedListener(this)
+        main_drawer_view.setNavigationItemSelectedListener(this)
         drawerToggle = object : ActionBarDrawerToggle(
                 this,
-                drawerLayout,
+                main_drawer_layout,
                 R.string.action_open,
                 R.string.action_close) {
 
@@ -226,7 +207,7 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
             }
         }
         drawerToggle?.let {
-            drawerLayout?.addDrawerListener(it)
+            main_drawer_layout.addDrawerListener(it)
         }
 
         supportActionBar?.let {
@@ -235,12 +216,12 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
         }
 
         // Fade out name and card number when app bar is being collapsed
-        appBarLayout?.let {
+        app_bar_layout.let {
             it.addOnOffsetChangedListener { appBarLayout, verticalOffset ->
                 val percentage = Math.abs(verticalOffset).toFloat() / appBarLayout.totalScrollRange
                 val alpha = 1 - percentage * 3f
-                cardOwnerName?.let { it.alpha = alpha }
-                cardNumber?.let { it.alpha = alpha }
+                toolbar_card_name.let { it.alpha = alpha }
+                toolbar_card_number.let { it.alpha = alpha }
             }
 
             it.addOnOffsetChangedListener(object : AppBarStateChangeListener() {
@@ -257,7 +238,7 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
             })
         }
 
-        swipeRefresh?.let {
+        swipe_refresh_container.let {
             it.setOnRefreshListener {
                 maybeUpdate(force = true)
             }
@@ -267,8 +248,7 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
 
     // Adds action to the FAB
     private fun setupFAB() {
-        quickChargeFAB = findViewById(R.id.fab_charge_card) as FloatingActionButton
-        quickChargeFAB?.let {
+        fab_charge_card.let {
             it.setOnClickListener {
                 launchChargeSite()
             }
@@ -313,10 +293,10 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
         val netInfo = connManager.activeNetworkInfo
         if (netInfo != null && netInfo.isConnected) {
             startService(intent)
-            swipeRefresh?.isRefreshing = true
+            swipe_refresh_container.isRefreshing = true
         } else {
-            swipeRefresh?.isRefreshing = false
-            parentView?.let {
+            swipe_refresh_container.isRefreshing = false
+            main_activity_parent.let {
                 Snackbar.make(it, R.string.error_no_internet, Snackbar.LENGTH_LONG)
                         .setAction(R.string.action_connect, { _ ->
                             startActivity(Intent(android.provider.Settings.ACTION_WIFI_SETTINGS))
@@ -326,9 +306,9 @@ class MainActivity : AppCompatActivity(), FoodRestaurantFragment.OnListFragmentI
     }
 
     private fun setCardData(cardData: CardData) {
-        cardOwnerName?.let { it.text = cardData.ownerName }
-        cardNumber?.let { it.text = Util.formatCardNumber(cardData.cardNumber) }
-        collapsingToolbarLayout?.let {
+        toolbar_card_name.let { it.text = cardData.ownerName }
+        toolbar_card_number.let { it.text = Util.formatCardNumber(cardData.cardNumber) }
+        toolbar_collapsing_layout.let {
             it.title = "${cardData.cardBalance} ${Constants.CARD_CURRENCY_SUFFIX}"
         }
     }
